@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <h1>Whatsapp</h1>
+    <script src="socket.io/socket.io.js"></script>
+    <script>
+      let socket = io();
+      let User;
+      socket.on("connect", () => {
+        console.log(socket.id);
+      });
+      socket.on("allmsg", (data) => {
+        if (User) {
+          document.getElementById(
+            "msg"
+          ).innerHTML += `<h5>${data.username} : ${data.msg} </h5>`;
+        }
+      });
+
+      const SendMessage = () => {
+        const Messege = document.getElementById("messege").value;
+        if (document.getElementById("messege").value === "") {
+          return;
+        }
+        socket.emit("sendmsg", {
+          username: User,
+          msg: document.getElementById("messege").value,
+        });
+        document.getElementById("messege").value = "";
+      };
+
+      const setuser = () => {
+        if (document.getElementById("username").value === "") {
+          return;
+        }
+        socket.emit("setuser", document.getElementById("username").value);
+        User = document.getElementById("username").value;
+        document.getElementById(
+          "userlogin"
+        ).innerHTML = `<div><input type="text" id="messege" /><button type="click" onclick=SendMessage()>SEND</button></div>`;
+      };
+    </script>
+    <div id="userlogin">
+      <h2>Enter Your name</h2>
+      <input type="text" id="username" />
+      <button type="button" onclick="setuser()">Join Group</button>
+    </div>
+    <div id="msg"></div>
+  </body>
+</html>
